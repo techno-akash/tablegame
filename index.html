@@ -383,6 +383,33 @@
             margin-top: 4px
         }
 
+        /* ---------- Footer ---------- */
+        .footer {
+            margin-top: 36px;
+            text-align: center;
+            font-family: var(--title);
+            font-size: 1.5rem;
+            color: var(--ink);
+        }
+
+        .footer span {
+            display: inline-block;
+            padding: 2px 16px;
+            transform: rotate(-1.5deg);
+            background: var(--yellow);
+            border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            border: 2px solid var(--pencil);
+            box-shadow: 2px 3px 0 rgba(60, 60, 60, .4);
+        }
+
+        .footer small {
+            display: block;
+            font-family: var(--hand);
+            font-size: .85rem;
+            color: var(--pencil);
+            margin-top: 8px
+        }
+
         /* ---------- Small / Big screens ---------- */
         @media (max-width:380px) {
             body {
@@ -490,6 +517,11 @@
                 page</button>
             <button class="sketch btn block" style="text-align:center" onclick="show('home')">Home 🏠</button>
         </section>
+
+        <footer class="footer">
+            <span>✏️ Made by @the.akanova</span>
+            <small>Practise daily, become a maths star ⭐</small>
+        </footer>
 
     </div>
 
