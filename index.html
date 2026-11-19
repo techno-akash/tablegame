@@ -632,6 +632,120 @@
             }
         }
 
+        /* ---------- Per-question timer + action buttons ---------- */
+        .qtimer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 14px;
+        }
+
+        .qtimer[hidden] {
+            display: none;
+        }
+
+        .qt-track {
+            flex: 1;
+            height: 16px;
+            overflow: hidden;
+            background: #eef6ff;
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+        }
+
+        .qt-track i {
+            display: block;
+            height: 100%;
+            width: 100%;
+            background: var(--mint);
+            border-radius: 999px;
+        }
+
+        .qt-num {
+            min-width: 64px;
+            padding: 2px 10px;
+            text-align: center;
+            font-weight: 700;
+            white-space: nowrap;
+            background: #cfeeff;
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+        }
+
+        .qtimer.warn .qt-track i {
+            background: var(--sun);
+        }
+
+        .qtimer.warn .qt-num {
+            background: #fff0b0;
+        }
+
+        .qtimer.danger .qt-track i {
+            background: var(--coral);
+        }
+
+        .qtimer.danger .qt-num {
+            background: #ffd9cc;
+            animation: pulse .6s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 12px;
+        }
+
+        .btn:disabled,
+        .btn:disabled:active {
+            opacity: .45;
+            cursor: not-allowed;
+            filter: none;
+            transform: none;
+            box-shadow: 0 5px 0 var(--ink);
+        }
+
+        .setting+.setting {
+            margin-top: 14px;
+        }
+
+        .setting .tgroup {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting input[type="text"] {
+            width: 84px;
+            font-family: var(--font);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--ink);
+            padding: 6px 10px;
+            background: #fff4c7;
+            border: 3px solid var(--ink);
+            border-radius: 14px;
+            outline: none;
+        }
+
+        .setting .hint-err {
+            flex-basis: 100%;
+            color: var(--bad);
+            font-size: .95rem;
+            font-weight: 500;
+        }
+
+        .review .sk {
+            color: #a8650a;
+            font-weight: 500;
+        }
+
         /* ---------- Result ---------- */
         .result-wrap {
             max-width: 600px;
@@ -825,6 +939,25 @@
                             <option>20</option>
                         </select>
                     </div>
+                    <div class="card setting">
+                        <label for="qtime">⏳ Time per question:</label>
+                        <div class="tgroup">
+                            <select id="qtime">
+                                <option value="0" selected>No limit</option>
+                                <option value="5">5 seconds</option>
+                                <option value="10">10 seconds</option>
+                                <option value="15">15 seconds</option>
+                                <option value="20">20 seconds</option>
+                                <option value="30">30 seconds</option>
+                                <option value="45">45 seconds</option>
+                                <option value="60">60 seconds</option>
+                                <option value="custom">Custom…</option>
+                            </select>
+                            <input id="qtimeCustom" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3"
+                                placeholder="sec" autocomplete="off" aria-label="Custom seconds per question" hidden>
+                        </div>
+                        <div class="hint-err" id="qtimeErr" role="alert" hidden></div>
+                    </div>
                 </div>
             </section>
 
@@ -844,13 +977,20 @@
                     </div>
 
                     <div class="card play">
+                        <div class="qtimer" id="qtimer" hidden>
+                            <div class="qt-track"><i id="qtBar"></i></div>
+                            <span class="qt-num" id="qtNum">0s</span>
+                        </div>
                         <div class="question" id="question"></div>
                         <div class="answer-row">
                             <input id="answer" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
                                 placeholder="?">
                         </div>
                         <div class="feedback" id="feedback"></div>
-                        <button class="btn primary" id="mainBtn">Check ✔</button>
+                        <div class="actions">
+                            <button class="btn primary" id="mainBtn">Check ✔</button>
+                            <button class="btn sky" id="skipBtn" title="Skip this question">Skip ⏭</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -925,6 +1065,7 @@
         let currentCat = null, currentMode = null;
         let qs = [], idx = 0, score = 0, streak = 0, answered = false;
         let timerId = null, secs = 0;
+        let qTimerId = null, qDeadline = 0, qLimit = 0, autoId = null; // per-question timer
 
         const $ = id => document.getElementById(id);
         function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
@@ -941,6 +1082,34 @@
         function updateTotals() {
             const d = load(); const played = Object.values(d).reduce((s, x) => s + (x.plays || 0), 0);
             $('totalStats').textContent = played ? `Rounds played: ${played} 📝` : 'Tip: a little practice every day makes you fast! 🚀';
+        }
+
+        /* ===================== SETTINGS ===================== */
+        const SKEY = 'mathsNotebookSettings'; // separate key so best-score data is untouched
+        function loadSettings() { try { return JSON.parse(localStorage.getItem(SKEY)) || {} } catch (e) { return {} } }
+        function saveSettings() {
+            try { localStorage.setItem(SKEY, JSON.stringify({ count: $('qcount').value, time: $('qtime').value, custom: $('qtimeCustom').value })) } catch (e) { }
+        }
+        function hasOption(sel, v) { return [...sel.options].some(o => o.value === String(v)); }
+        function syncTimeUI() { $('qtimeCustom').hidden = $('qtime').value !== 'custom'; }
+        function showTimeErr(msg) {
+            const el = $('qtimeErr'); el.textContent = msg; el.hidden = !msg;
+            const t = $('qtimeCustom');
+            if (msg && !t.hidden) { t.classList.add('shake'); setTimeout(() => t.classList.remove('shake'), 400); t.focus(); }
+        }
+        // seconds per question: 0 = no limit, NaN = invalid custom value
+        function getLimit() {
+            const v = $('qtime').value;
+            if (v !== 'custom') return +v;
+            const n = parseInt($('qtimeCustom').value, 10);
+            return (n >= 1 && n <= 300) ? n : NaN;
+        }
+        function applySettings() {
+            const s = loadSettings();
+            if (s.count && hasOption($('qcount'), s.count)) $('qcount').value = String(s.count);
+            if (s.time && hasOption($('qtime'), s.time)) $('qtime').value = String(s.time);
+            if (typeof s.custom === 'string') $('qtimeCustom').value = s.custom.replace(/\D/g, '').slice(0, 3);
+            syncTimeUI();
         }
 
         /* ===================== MENU ===================== */
@@ -964,7 +1133,12 @@
 
         /* ===================== GAME ===================== */
         function startGame(mode) {
+            const limit = getLimit();
+            if (Number.isNaN(limit)) { showTimeErr('Please enter seconds from 1 to 300'); return; }
+            showTimeErr('');
+            saveSettings();
             currentMode = mode;
+            qLimit = limit;
             const cat = CATS[currentCat];
             const n = +$('qcount').value;
             qs = []; const seen = new Set();
@@ -973,9 +1147,10 @@
                 const [a, b] = cat.make(mode);
                 const key = a + 'x' + b;
                 if (seen.has(key)) continue;
-                seen.add(key); qs.push({ a, b, ans: a * b, given: null, ok: false });
+                seen.add(key); qs.push({ a, b, ans: a * b, given: null, ok: false, status: null });
             }
             idx = 0; score = 0; streak = 0; secs = 0;
+            stopQTimer(); stopAuto();
             $('modeName').textContent = mode.label;
             $('qTotal').textContent = qs.length;
             clearInterval(timerId);
@@ -995,21 +1170,24 @@
             $('score').textContent = score;
             $('streak').textContent = streak;
             $('bar').style.width = (idx / qs.length * 100) + '%';
-            setTimeout(() => $('answer').focus(), 50);
+            $('skipBtn').disabled = false;
+            setTimeout(() => { if (!answered && $('game').classList.contains('active')) $('answer').focus(); }, 50);
+            startQTimer();
         }
 
         function check() {
             if (answered) { next(); return; }
             const v = $('answer').value.trim();
             if (v === '') { $('answer').classList.add('shake'); setTimeout(() => $('answer').classList.remove('shake'), 400); return; }
+            stopQTimer(); // answered in time: stop the countdown
             const q = qs[idx]; q.given = +v; answered = true;
-            $('answer').disabled = true;
+            lockInput();
             if (q.given === q.ans) {
-                q.ok = true; score++; streak++;
+                q.ok = true; q.status = 'ok'; score++; streak++;
                 const praise = ['Super! 🌟', 'Correct! ✅', 'Wow! 🎉', 'Brilliant! 💡', 'Yes! 👏'][rnd(0, 4)];
                 $('feedback').innerHTML = `<div class="good pop">${praise}</div>` + (streak >= 3 ? `<div>🔥 ${streak} in a row!</div>` : '');
             } else {
-                streak = 0;
+                streak = 0; q.status = 'wrong';
                 $('feedback').innerHTML = `<div class="bad shake">Oops! ❌</div><div>${q.a} × ${q.b} = <b>${q.ans}</b></div>`;
             }
             $('score').textContent = score; $('streak').textContent = streak;
@@ -1017,18 +1195,83 @@
             $('mainBtn').textContent = idx === qs.length - 1 ? 'Finish 🏁' : 'Next →';
         }
 
+        /* ---------- per-question timer ---------- */
+        const AUTO_MS = 1800; // "time's up" answer stays on screen this long, then it moves on by itself
+
+        function stopQTimer() { clearInterval(qTimerId); qTimerId = null; }
+        function stopAuto() { clearTimeout(autoId); autoId = null; }
+
+        // disable input + skip once a question is settled; keep keyboard focus on the main button
+        function lockInput() {
+            $('answer').disabled = true;
+            $('mainBtn').focus();
+            $('skipBtn').disabled = true;
+        }
+
+        function paintQTimer(leftMs) {
+            const frac = Math.max(0, Math.min(1, leftMs / (qLimit * 1000)));
+            const danger = frac <= .3 || (leftMs <= 3000 && frac <= .6);
+            $('qtBar').style.width = (frac * 100) + '%';
+            $('qtNum').textContent = Math.ceil(Math.max(0, leftMs) / 1000) + 's';
+            $('qtimer').classList.toggle('danger', danger);
+            $('qtimer').classList.toggle('warn', !danger && frac <= .6);
+        }
+
+        function startQTimer() {
+            stopQTimer();
+            if (!qLimit) { $('qtimer').hidden = true; return; }
+            $('qtimer').hidden = false;
+            qDeadline = Date.now() + qLimit * 1000; // timestamp based, so it never drifts
+            paintQTimer(qLimit * 1000);
+            qTimerId = setInterval(() => {
+                if (answered) { stopQTimer(); return; }
+                const left = qDeadline - Date.now();
+                if (left <= 0) timeUp(); else paintQTimer(left);
+            }, 100);
+        }
+
+        function timeUp() {
+            if (answered) return;
+            stopQTimer();
+            const q = qs[idx]; q.status = 'timeout'; q.given = null;
+            answered = true; streak = 0;
+            lockInput();
+            paintQTimer(0);
+            $('feedback').innerHTML = `<div class="bad pop">Time's up! ⏰</div><div>${q.a} × ${q.b} = <b>${q.ans}</b></div>`;
+            $('score').textContent = score; $('streak').textContent = streak;
+            $('bar').style.width = ((idx + 1) / qs.length * 100) + '%';
+            $('mainBtn').textContent = idx === qs.length - 1 ? 'Finish 🏁' : 'Next →';
+            stopAuto();
+            const at = idx;
+            autoId = setTimeout(() => {
+                autoId = null;
+                if (answered && idx === at && $('game').classList.contains('active')) next();
+            }, AUTO_MS);
+        }
+
+        function skipQ() {
+            if (answered || !$('game').classList.contains('active')) return;
+            stopQTimer(); stopAuto();
+            const q = qs[idx]; q.status = 'skip'; q.given = null;
+            streak = 0;
+            next();
+        }
+
         function next() {
+            stopQTimer(); stopAuto();
             idx++;
             if (idx >= qs.length) finish(); else showQuestion();
         }
 
         function quit() {
             clearInterval(timerId);
+            stopQTimer(); stopAuto();
             show('sub');
         }
 
         function finish() {
             clearInterval(timerId);
+            stopQTimer(); stopAuto();
             const total = qs.length, pct = score / total;
             $('rScore').textContent = score; $('rTotal').textContent = total;
             const st = pct >= .9 ? 3 : pct >= .6 ? 2 : pct >= .3 ? 1 : 0;
@@ -1048,15 +1291,31 @@
                 if (was !== null) note += ' · 🏆 New best!';
             } else note += ` · Best: ${m.best}/${oldTotal}`;
             d[currentMode.id] = m; save(d);
+            const skipped = qs.filter(q => q.status === 'skip' || q.status === 'timeout').length;
+            if (skipped) note += ` · Skipped: ${skipped}`;
             $('rBest').textContent = note;
-            $('rReview').innerHTML = qs.map(q =>
-                `<div class="${q.ok ? 'ok' : 'no'}">${q.ok ? '✔' : '✘'} ${q.a} × ${q.b} = ${q.ans}${q.ok ? '' : ` <span style="color:var(--soft)">(you: ${q.given})</span>`}</div>`
-            ).join('');
+            $('rReview').innerHTML = qs.map(q => {
+                const eq = `${q.a} × ${q.b} = ${q.ans}`;
+                if (q.status === 'ok') return `<div class="ok">✔ ${eq}</div>`;
+                if (q.status === 'skip') return `<div class="sk">⏭ ${eq} <span style="color:var(--soft)">(skipped)</span></div>`;
+                if (q.status === 'timeout') return `<div class="sk">⏰ ${eq} <span style="color:var(--soft)">(time up)</span></div>`;
+                return `<div class="no">✘ ${eq} <span style="color:var(--soft)">(you: ${q.given})</span></div>`;
+            }).join('');
             show('result');
         }
 
         /* ===================== EVENTS ===================== */
         $('mainBtn').addEventListener('click', check);
+        $('skipBtn').addEventListener('click', skipQ);
+        $('qcount').addEventListener('change', saveSettings);
+        $('qtime').addEventListener('change', () => {
+            syncTimeUI(); showTimeErr(''); saveSettings();
+            if ($('qtime').value === 'custom') $('qtimeCustom').focus();
+        });
+        $('qtimeCustom').addEventListener('input', e => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
+            showTimeErr(''); saveSettings();
+        });
         $('answer').addEventListener('keydown', e => {
             if (e.key !== 'Enter') return;
             e.preventDefault();
@@ -1068,6 +1327,7 @@
             if (e.target.tagName === 'BUTTON' || e.repeat) return; // button's own click already handles Enter
             if (e.key === 'Enter' && answered && $('game').classList.contains('active')) check();
         });
+        applySettings();
         updateTotals();
     </script>
 </body>
