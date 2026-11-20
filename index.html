@@ -36,6 +36,7 @@
         body {
             margin: 0;
             min-height: 100%;
+            max-width: 100%;
         }
 
         body {
@@ -135,6 +136,7 @@
 
         main {
             flex: 1;
+            min-width: 0;
         }
 
         h1,
@@ -234,7 +236,7 @@
         /* ---------- Home categories ---------- */
         .cats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
             gap: clamp(14px, 2.4vw, 24px);
         }
 
@@ -313,6 +315,14 @@
 
         .cat.c-three {
             --c: #ffb3cf;
+        }
+
+        .cat.c-add {
+            --c: #b9f0c8;
+        }
+
+        .cat.c-train {
+            --c: #d9ccff;
         }
 
         .best {
@@ -470,6 +480,13 @@
             outline: none;
         }
 
+        .setting input[type="checkbox"] {
+            width: 26px;
+            height: 26px;
+            accent-color: var(--good);
+            cursor: pointer;
+        }
+
         /* ---------- Game ---------- */
         .game-wrap {
             max-width: 600px;
@@ -577,11 +594,6 @@
         #answer:focus {
             background: #fff4b8;
             box-shadow: 0 0 0 5px rgba(76, 201, 240, .5);
-        }
-
-        #answer:disabled {
-            opacity: 1;
-            -webkit-text-fill-color: var(--ink);
         }
 
         .feedback {
@@ -811,6 +823,204 @@
             font-weight: 500;
         }
 
+        /* ---------- Training: tables ---------- */
+        .train-wrap {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .train-wrap .cats {
+            margin-top: 18px;
+        }
+
+        .tr-form {
+            margin-top: 14px;
+            padding: 16px;
+        }
+
+        .tr-fields {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .tr-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .tr-field label {
+            font-size: .95rem;
+            font-weight: 600;
+            color: var(--soft);
+        }
+
+        .tr-field input {
+            width: 100%;
+            min-width: 0;
+            font-family: var(--font);
+            font-size: 1.4rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--ink);
+            padding: 10px 10px;
+            background: #fff4c7;
+            border: 3px solid var(--ink);
+            border-radius: 16px;
+            outline: none;
+        }
+
+        .tr-field input:focus {
+            background: #fff0a8;
+            box-shadow: 0 0 0 5px rgba(76, 201, 240, .5);
+        }
+
+        .tr-form .btn {
+            margin-top: 14px;
+        }
+
+        .tr-hint {
+            margin: 12px 0 0;
+            font-size: .95rem;
+            color: var(--soft);
+        }
+
+        .tr-err {
+            margin: 10px 0 0;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--bad);
+        }
+
+        .tr-err[hidden],
+        .tr-result[hidden] {
+            display: none;
+        }
+
+        .tr-result {
+            margin-top: 18px;
+            scroll-margin-top: 12px;
+        }
+
+        .tr-picks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .tr-pick {
+            max-width: 100%;
+            padding: 6px 14px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            background: #fff;
+            border: 3px solid var(--ink);
+            border-radius: 999px;
+            box-shadow: 0 3px 0 var(--ink);
+            overflow-wrap: anywhere;
+        }
+
+        .tr-pick.on {
+            background: var(--sun);
+        }
+
+        .tr-pick:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .tr-title {
+            margin: 0 0 12px;
+            text-align: center;
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .tr-rows {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .trow {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+            padding: 10px 12px;
+            text-align: center;
+            background: #fff;
+            border: 3px solid var(--ink);
+            border-radius: 18px;
+            box-shadow: 0 4px 0 var(--ink);
+        }
+
+        .trow:nth-child(5n+1) {
+            background: #ffe9a3;
+        }
+
+        .trow:nth-child(5n+2) {
+            background: #c4f3dd;
+        }
+
+        .trow:nth-child(5n+3) {
+            background: #cfeeff;
+        }
+
+        .trow:nth-child(5n+4) {
+            background: #ffd6e6;
+        }
+
+        .trow:nth-child(5n+5) {
+            background: #e3dcff;
+        }
+
+        .trow .q {
+            font-size: .95rem;
+            font-weight: 500;
+            color: #4a4880;
+            overflow-wrap: anywhere;
+        }
+
+        .trow .a {
+            font-size: clamp(1.2rem, 4.6vw, 1.6rem);
+            font-weight: 700;
+            overflow-wrap: anywhere;
+            line-height: 1.15;
+        }
+
+        .tr-pager {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .tr-pager .btn {
+            margin: 0;
+            padding: 10px 8px;
+            font-size: 1.05rem;
+        }
+
+        .tr-page {
+            text-align: center;
+            font-size: .95rem;
+            font-weight: 600;
+            color: var(--soft);
+            line-height: 1.25;
+        }
+
+        .tr-page b {
+            display: block;
+            font-size: 1.1rem;
+            color: var(--ink);
+        }
+
         /* ---------- Footer ---------- */
         .footer {
             margin-top: 30px;
@@ -863,10 +1073,22 @@
             .deco span {
                 opacity: .1;
             }
+
+            .tr-form {
+                padding: 14px;
+            }
+
+            .trow {
+                padding: 8px 8px;
+            }
         }
 
         @media (max-width: 340px) {
             .chips {
+                grid-template-columns: 1fr;
+            }
+
+            .tr-fields {
                 grid-template-columns: 1fr;
             }
         }
@@ -874,6 +1096,10 @@
         @media (min-width: 900px) {
             .cats {
                 grid-template-columns: repeat(3, 1fr);
+            }
+
+            .train-wrap .cats {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -916,6 +1142,16 @@
                         <span class="name">Three Digit Multiplication</span>
                         <small>3 × 1, 3 × 2, 3 × 3 digits</small>
                     </button>
+                    <button class="cat c-add" onclick="openCat('add')">
+                        <span class="ico">+</span>
+                        <span class="name">Addition (Sum)</span>
+                        <small>2, 3, 4 digit &amp; decimal sum</small>
+                    </button>
+                    <button class="cat c-train" onclick="show('train')">
+                        <span class="ico">📚</span>
+                        <span class="name">Training</span>
+                        <small>Learn the table of any number</small>
+                    </button>
                 </div>
 
                 <p class="best" id="totalStats"></p>
@@ -957,6 +1193,68 @@
                                 placeholder="sec" autocomplete="off" aria-label="Custom seconds per question" hidden>
                         </div>
                         <div class="hint-err" id="qtimeErr" role="alert" hidden></div>
+                    </div>
+                    <div class="card setting">
+                        <label for="autonext">⚡ Auto next after correct answer</label>
+                        <input id="autonext" type="checkbox" checked>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== TRAINING (module list) ===== -->
+            <section id="train" class="screen">
+                <div class="train-wrap">
+                    <button class="back" onclick="show('home')">← Back</button>
+                    <div class="sub-head" style="--c:#d9ccff">
+                        <h2>Training 📚</h2>
+                        <p class="sub">Choose what you want to learn.</p>
+                    </div>
+                    <div class="cats">
+                        <button class="cat c-tables" onclick="openTables()">
+                            <span class="ico">✖</span>
+                            <span class="name">Tables</span>
+                            <small>Type any number and see its table</small>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== TRAINING: TABLES ===== -->
+            <section id="trainTables" class="screen">
+                <div class="train-wrap">
+                    <button class="back" onclick="show('train')">← Back</button>
+                    <div class="sub-head" style="--c:#ffd96b">
+                        <h2>Tables ✖</h2>
+                        <p class="sub">Type any number to see its table.</p>
+                    </div>
+
+                    <form class="card tr-form" id="trForm" autocomplete="off" novalidate>
+                        <div class="tr-fields">
+                            <div class="tr-field">
+                                <label for="trFrom">Number</label>
+                                <input id="trFrom" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="12"
+                                    placeholder="e.g. 56" enterkeyhint="go">
+                            </div>
+                            <div class="tr-field">
+                                <label for="trTo">To (optional)</label>
+                                <input id="trTo" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="12"
+                                    placeholder="e.g. 60" enterkeyhint="go">
+                            </div>
+                        </div>
+                        <button class="btn green" type="submit">Show table ✨</button>
+                        <p class="tr-hint">Fill only the first box for one table. Fill both for a range, with at most 5 numbers after the first (for example 5 to 10).</p>
+                        <p class="tr-err" id="trErr" role="alert" hidden></p>
+                    </form>
+
+                    <div class="tr-result" id="trResult" hidden>
+                        <div class="tr-picks" id="trPicks"></div>
+                        <h3 class="tr-title" id="trTitle"></h3>
+                        <div class="tr-rows" id="trRows"></div>
+                        <div class="tr-pager">
+                            <button class="btn sky" type="button" id="trPrev">← Prev</button>
+                            <div class="tr-page" id="trPage"></div>
+                            <button class="btn sky" type="button" id="trNext">Next →</button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1061,6 +1359,20 @@
             }
         };
 
+        CATS.add = {
+            title: 'Addition (Sum)',
+            color: '#b9f0c8',
+            hint: 'Add the numbers. Type a dot (.) for decimals.',
+            modes: [
+                { id: 's2', label: '2 digit + 2 digit', op: '+', a: [10, 99], b: [10, 99] },
+                { id: 's3', label: '3 digit + 3 digit', op: '+', a: [100, 999], b: [100, 999] },
+                { id: 's4', label: '4 digit + 4 digit', op: '+', a: [1000, 9999], b: [1000, 9999] },
+                { id: 'sd1', label: 'Decimal (1 place)', op: '+', dp: 1, a: [10, 999], b: [10, 999] },
+                { id: 'sd2', label: 'Decimal (2 places)', op: '+', dp: 2, a: [100, 9999], b: [100, 9999] }
+            ],
+            make(m) { return [rnd(...m.a), rnd(...m.b)]; }
+        };
+
         /* ===================== STATE ===================== */
         let currentCat = null, currentMode = null;
         let qs = [], idx = 0, score = 0, streak = 0, answered = false;
@@ -1088,7 +1400,7 @@
         const SKEY = 'mathsNotebookSettings'; // separate key so best-score data is untouched
         function loadSettings() { try { return JSON.parse(localStorage.getItem(SKEY)) || {} } catch (e) { return {} } }
         function saveSettings() {
-            try { localStorage.setItem(SKEY, JSON.stringify({ count: $('qcount').value, time: $('qtime').value, custom: $('qtimeCustom').value })) } catch (e) { }
+            try { localStorage.setItem(SKEY, JSON.stringify({ count: $('qcount').value, time: $('qtime').value, custom: $('qtimeCustom').value, auto: $('autonext').checked })) } catch (e) { }
         }
         function hasOption(sel, v) { return [...sel.options].some(o => o.value === String(v)); }
         function syncTimeUI() { $('qtimeCustom').hidden = $('qtime').value !== 'custom'; }
@@ -1109,6 +1421,7 @@
             if (s.count && hasOption($('qcount'), s.count)) $('qcount').value = String(s.count);
             if (s.time && hasOption($('qtime'), s.time)) $('qtime').value = String(s.time);
             if (typeof s.custom === 'string') $('qtimeCustom').value = s.custom.replace(/\D/g, '').slice(0, 3);
+            if (typeof s.auto === 'boolean') $('autonext').checked = s.auto;
             syncTimeUI();
         }
 
@@ -1138,6 +1451,7 @@
             showTimeErr('');
             saveSettings();
             currentMode = mode;
+            $('answer').inputMode = mode.dp ? 'decimal' : 'numeric';
             qLimit = limit;
             const cat = CATS[currentCat];
             const n = +$('qcount').value;
@@ -1147,7 +1461,10 @@
                 const [a, b] = cat.make(mode);
                 const key = a + 'x' + b;
                 if (seen.has(key)) continue;
-                seen.add(key); qs.push({ a, b, ans: a * b, given: null, ok: false, status: null });
+                seen.add(key);
+                const op = mode.op || '×', dp = mode.dp || 0, sc = Math.pow(10, dp);
+                const val = op === '+' ? a + b : a * b;
+                qs.push({ a: (a / sc).toFixed(dp), b: (b / sc).toFixed(dp), ans: (val / sc).toFixed(dp), op, sc, val, given: null, ok: false, status: null });
             }
             idx = 0; score = 0; streak = 0; secs = 0;
             stopQTimer(); stopAuto();
@@ -1162,8 +1479,8 @@
 
         function showQuestion() {
             const q = qs[idx]; answered = false;
-            $('question').innerHTML = `${q.a}<span class="x">×</span>${q.b}`;
-            $('answer').value = ''; $('answer').disabled = false;
+            $('question').innerHTML = `${q.a}<span class="x">${q.op}</span>${q.b}`;
+            $('answer').value = ''; $('answer').readOnly = false;
             $('feedback').innerHTML = '';
             $('mainBtn').textContent = 'Check ✔';
             $('qNo').textContent = idx + 1;
@@ -1178,17 +1495,24 @@
         function check() {
             if (answered) { next(); return; }
             const v = $('answer').value.trim();
-            if (v === '') { $('answer').classList.add('shake'); setTimeout(() => $('answer').classList.remove('shake'), 400); return; }
+            if (v === '' || isNaN(parseFloat(v))) { $('answer').classList.add('shake'); setTimeout(() => $('answer').classList.remove('shake'), 400); return; }
             stopQTimer(); // answered in time: stop the countdown
-            const q = qs[idx]; q.given = +v; answered = true;
+            const q = qs[idx]; q.given = v; answered = true;
             lockInput();
-            if (q.given === q.ans) {
+            if (Math.abs(parseFloat(v) * q.sc - q.val) < 1e-6) {
                 q.ok = true; q.status = 'ok'; score++; streak++;
+                if ($('autonext').checked) {
+                    stopAuto(); const at = idx;
+                    autoId = setTimeout(() => {
+                        autoId = null;
+                        if (answered && idx === at && $('game').classList.contains('active')) next();
+                    }, 700);
+                }
                 const praise = ['Super! 🌟', 'Correct! ✅', 'Wow! 🎉', 'Brilliant! 💡', 'Yes! 👏'][rnd(0, 4)];
                 $('feedback').innerHTML = `<div class="good pop">${praise}</div>` + (streak >= 3 ? `<div>🔥 ${streak} in a row!</div>` : '');
             } else {
                 streak = 0; q.status = 'wrong';
-                $('feedback').innerHTML = `<div class="bad shake">Oops! ❌</div><div>${q.a} × ${q.b} = <b>${q.ans}</b></div>`;
+                $('feedback').innerHTML = `<div class="bad shake">Oops! ❌</div><div>${q.a} ${q.op} ${q.b} = <b>${q.ans}</b></div>`;
             }
             $('score').textContent = score; $('streak').textContent = streak;
             $('bar').style.width = ((idx + 1) / qs.length * 100) + '%';
@@ -1201,10 +1525,10 @@
         function stopQTimer() { clearInterval(qTimerId); qTimerId = null; }
         function stopAuto() { clearTimeout(autoId); autoId = null; }
 
-        // disable input + skip once a question is settled; keep keyboard focus on the main button
+        // lock input + skip once a question is settled; readOnly keeps the mobile keyboard open
         function lockInput() {
-            $('answer').disabled = true;
-            $('mainBtn').focus();
+            $('answer').readOnly = true;
+            $('answer').focus();
             $('skipBtn').disabled = true;
         }
 
@@ -1237,7 +1561,7 @@
             answered = true; streak = 0;
             lockInput();
             paintQTimer(0);
-            $('feedback').innerHTML = `<div class="bad pop">Time's up! ⏰</div><div>${q.a} × ${q.b} = <b>${q.ans}</b></div>`;
+            $('feedback').innerHTML = `<div class="bad pop">Time's up! ⏰</div><div>${q.a} ${q.op} ${q.b} = <b>${q.ans}</b></div>`;
             $('score').textContent = score; $('streak').textContent = streak;
             $('bar').style.width = ((idx + 1) / qs.length * 100) + '%';
             $('mainBtn').textContent = idx === qs.length - 1 ? 'Finish 🏁' : 'Next →';
@@ -1295,7 +1619,7 @@
             if (skipped) note += ` · Skipped: ${skipped}`;
             $('rBest').textContent = note;
             $('rReview').innerHTML = qs.map(q => {
-                const eq = `${q.a} × ${q.b} = ${q.ans}`;
+                const eq = `${q.a} ${q.op} ${q.b} = ${q.ans}`;
                 if (q.status === 'ok') return `<div class="ok">✔ ${eq}</div>`;
                 if (q.status === 'skip') return `<div class="sk">⏭ ${eq} <span style="color:var(--soft)">(skipped)</span></div>`;
                 if (q.status === 'timeout') return `<div class="sk">⏰ ${eq} <span style="color:var(--soft)">(time up)</span></div>`;
@@ -1308,6 +1632,7 @@
         $('mainBtn').addEventListener('click', check);
         $('skipBtn').addEventListener('click', skipQ);
         $('qcount').addEventListener('change', saveSettings);
+        $('autonext').addEventListener('change', saveSettings);
         $('qtime').addEventListener('change', () => {
             syncTimeUI(); showTimeErr(''); saveSettings();
             if ($('qtime').value === 'custom') $('qtimeCustom').focus();
@@ -1322,11 +1647,94 @@
             e.stopPropagation(); // don't let this Enter bubble to the document handler (it would call check() a 2nd time and skip the question)
             if (!e.repeat) check(); // holding Enter must not rush through questions
         });
-        $('answer').addEventListener('input', e => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); });
-        document.addEventListener('keydown', e => { // Enter on "Next" even when input disabled
+        $('answer').addEventListener('input', e => {
+            const dec = currentMode && currentMode.dp;
+            let s = e.target.value.replace(/,/g, '.').replace(dec ? /[^0-9.]/g : /[^0-9]/g, '');
+            if (dec) { const i = s.indexOf('.'); if (i > -1) s = s.slice(0, i + 1) + s.slice(i + 1).replace(/\./g, ''); }
+            e.target.value = s;
+        });
+        document.addEventListener('keydown', e => { // Enter on "Next" even when input is locked
             if (e.target.tagName === 'BUTTON' || e.repeat) return; // button's own click already handles Enter
             if (e.key === 'Enter' && answered && $('game').classList.contains('active')) check();
         });
+
+        /* ===================== TRAINING: TABLES ===================== */
+        // Any whole number from 1 up to 12 digits. BigInt keeps big products exact.
+        // A range can include at most MAX_SPAN numbers after the first one (5 to 10 is fine, 1 to 8 is not).
+        const MAX_SPAN = 5;
+        const ROWS_PER_PAGE = 10, MAX_ROWS = 100; // 10 pages of 10 rows: 1-10 ... 91-100
+        let trNums = [], trActive = 0, trPage = 0;
+
+        function openTables() {
+            $('trFrom').value = ''; $('trTo').value = '';
+            $('trErr').hidden = true;
+            $('trResult').hidden = true;
+            show('trainTables');
+            setTimeout(() => $('trFrom').focus(), 60);
+        }
+
+        function parseTrainInput(fromRaw, toRaw) {
+            const from = fromRaw.trim(), to = toRaw.trim();
+            if (!from) return { err: 'Please type a number first.' };
+            if (!/^\d{1,12}$/.test(from) || BigInt(from) < 1n) return { err: 'Please type a whole number, 1 or more.' };
+            const lo = BigInt(from);
+            if (!to) return { nums: [lo] };
+            if (!/^\d{1,12}$/.test(to)) return { err: 'The second number must be a whole number.' };
+            const hi = BigInt(to);
+            if (hi < lo) return { err: 'The second number must be bigger than the first, like 5 to 10.' };
+            if (hi - lo > BigInt(MAX_SPAN)) return { err: `A range can show at most ${MAX_SPAN + 1} tables, like 5 to 10.` };
+            const nums = [];
+            for (let n = lo; n <= hi; n++) nums.push(n);
+            return { nums };
+        }
+
+        function renderTrain(scroll) {
+            const n = trNums[trActive];
+            const pages = MAX_ROWS / ROWS_PER_PAGE;
+            const start = trPage * ROWS_PER_PAGE + 1, end = start + ROWS_PER_PAGE - 1;
+
+            const picks = $('trPicks'); picks.innerHTML = '';
+            if (trNums.length > 1) {
+                trNums.forEach((v, i) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'tr-pick' + (i === trActive ? ' on' : '');
+                    b.textContent = String(v);
+                    b.onclick = () => { trActive = i; trPage = 0; renderTrain(false); };
+                    picks.appendChild(b);
+                });
+            }
+            picks.hidden = trNums.length < 2;
+
+            $('trTitle').textContent = `Table of ${n}`;
+            let h = '';
+            for (let i = start; i <= end; i++) {
+                h += `<div class="trow"><span class="q">${n} × ${i} =</span><b class="a">${n * BigInt(i)}</b></div>`;
+            }
+            $('trRows').innerHTML = h;
+            $('trPage').innerHTML = `<b>${start}–${end}</b>Page ${trPage + 1} of ${pages}`;
+            $('trPrev').disabled = trPage === 0;
+            $('trNext').disabled = trPage === pages - 1;
+            $('trResult').hidden = false;
+            if (scroll) $('trResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        $('trForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const r = parseTrainInput($('trFrom').value, $('trTo').value), err = $('trErr');
+            if (r.err) { err.textContent = r.err; err.hidden = false; $('trResult').hidden = true; return; }
+            err.hidden = true;
+            trNums = r.nums; trActive = 0; trPage = 0;
+            if (document.activeElement) document.activeElement.blur(); // close the mobile keyboard
+            renderTrain(true);
+        });
+        ['trFrom', 'trTo'].forEach(id => $(id).addEventListener('input', e => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 12);
+            $('trErr').hidden = true;
+        }));
+        $('trPrev').addEventListener('click', () => { if (trPage > 0) { trPage--; renderTrain(true); } });
+        $('trNext').addEventListener('click', () => { if (trPage < MAX_ROWS / ROWS_PER_PAGE - 1) { trPage++; renderTrain(true); } });
+
         applySettings();
         updateTotals();
     </script>
